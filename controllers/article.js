@@ -2,6 +2,8 @@
 
 const validator = require('validator');
 const Article = require('../models/article');
+const fs = require('fs');
+const path = require('path');
 
 var controller = {
 
@@ -137,43 +139,6 @@ var controller = {
     },
 
     //----------------------------------------------------------------------------------------------------
-    getArticle: (req, res) => {
-
-        var id = req.params.id;
-
-        if (!id) {
-            return res.status(400).send({
-                status: 'success',
-                message: 'Faltan parámetros.'
-            }); 
-        }
-
-        Article.findById(id, (error, article) => {
-
-            if (error) {
-                return res.status(500).send({
-                    status: 'error',
-                    message: 'Error al intentar obtener el artículo.'
-                });
-            }
-
-            if (!article) {
-                return res.status(404).send({
-                    status: 'error',
-                    message: 'No existe el artículo.'
-                });
-            }
-
-            return res.status(200).send({
-                status: 'success',
-                article
-            });
-
-        });
-
-    },
-
-    //----------------------------------------------------------------------------------------------------
     update: (req, res) => {
 
         var id = req.params.id;
@@ -256,6 +221,72 @@ var controller = {
             });
 
         });
+
+    },
+
+    //----------------------------------------------------------------------------------------------------
+    upload: (req, res) => {
+
+        //Multiparty module is configured in router/article.js.
+
+        //Gets file.
+        var fileName = 'Image not uploaded...';
+
+        if (!req.files) {
+            return res.status(400).send({
+                status: 'error',
+                message: fileName
+            });
+        }
+
+        //Gets file's name and extension.
+        var filePath = req.files.file0.path;
+        var fileSplit = filePath.split('\\'); //This line works on Windows. For Linux or Mac should be: .split('/');
+
+        var fileName = fileSplit[2];
+        var extensionSplit = fileName.split('.');
+        var fileExtension = extensionSplit[1];
+
+        //Validates file extension. If not valid, then deletes the file.
+        if (fileExtension != 'jpg' && fileExtension != 'jpeg' && fileExtension != 'png') {
+            fs.unlink(filePath, (error) => {
+                return res.status(400).send({
+                    status: 'error',
+                    message: 'File extension is not valid.'
+                });
+            });
+        }
+
+        else {
+
+            //Finds article, sets file's name and updates it.
+
+            var id = req.params.id;
+
+            Article.findOneAndUpdate({_id: id}, {image: fileName}, {new: true}, (error, articleUpdated) => {
+
+                if (error) {
+                    return res.status(500).send({
+                        status: 'error',
+                        status: 'Image loaded.'
+                    });
+                }
+
+                if (!articleUpdated) {
+                    return res.status(404).send({
+                        status: 'error',
+                        status: 'Article not found.'
+                    });
+                }
+
+                return res.status(200).send({
+                    status: 'success',
+                    articleUpdated
+                });
+
+            });
+
+        }
 
     }
 

@@ -288,6 +288,29 @@ var controller = {
 
         }
 
+    },
+
+    //----------------------------------------------------------------------------------------------------
+    getImage: (req, res) => {
+
+        var file = req.params.image;
+        var pathFile = './uploads/articles/' + file;
+
+        fs.exists(pathFile, (exists) => {
+
+            if (exists) {
+                return res.sendFile(path.resolve(pathFile));
+            }
+
+            else {
+                return res.status(404).send({
+                    status: 'error',
+                    message: 'Image not found.'
+                });
+            }
+
+        });
+
     }
 
 };

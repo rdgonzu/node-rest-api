@@ -227,6 +227,36 @@ var controller = {
             });
         }
 
+    },
+
+    //----------------------------------------------------------------------------------------------------
+    delete: (req, res) => {
+
+        var id = req.params.id;
+
+        Article.findOneAndDelete({_id: id}, (error, articleDeleted) => {
+
+            if (error) {
+                return res.status(500).send({
+                    status: 'error',
+                    message: 'Error deleting article.'
+                });
+            }
+
+            if (!articleDeleted) {
+                return res.status(500).send({
+                    status: 'error',
+                    message: 'Article not found.'
+                });
+            }
+
+            return res.status(200).send({
+                status: 'success',
+                articleDeleted
+            });
+
+        });
+
     }
 
 };

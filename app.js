@@ -7,6 +7,9 @@ const bodyParser = require('body-parser');
 //Executes express.
 const app = express();
 
+//Cargar routes files.
+var articleRoutes = require('./routes/article');
+
 //Middlewares:
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -20,18 +23,8 @@ app.use((req, res, next) => {
     next();
 });
 
-//Testing endpoint.
-app.get('/api/testing', (req, res) => {
-
-    console.log('Hi from testing endpoint!');
-
-    return res.status(200).send(
-        {
-            message: 'Hi from testing endpoint!'
-        }
-    );
-
-});
+//Adds prefix to routes.
+app.use('/api', articleRoutes);
 
 //Exports module.
 module.exports = app;

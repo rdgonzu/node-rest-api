@@ -134,6 +134,99 @@ var controller = {
 
         });
 
+    },
+
+    //----------------------------------------------------------------------------------------------------
+    getArticle: (req, res) => {
+
+        var id = req.params.id;
+
+        if (!id) {
+            return res.status(400).send({
+                status: 'success',
+                message: 'Faltan parámetros.'
+            }); 
+        }
+
+        Article.findById(id, (error, article) => {
+
+            if (error) {
+                return res.status(500).send({
+                    status: 'error',
+                    message: 'Error al intentar obtener el artículo.'
+                });
+            }
+
+            if (!article) {
+                return res.status(404).send({
+                    status: 'error',
+                    message: 'No existe el artículo.'
+                });
+            }
+
+            return res.status(200).send({
+                status: 'success',
+                article
+            });
+
+        });
+
+    },
+
+    //----------------------------------------------------------------------------------------------------
+    update: (req, res) => {
+
+        var id = req.params.id;
+
+        var params = req.body;
+
+        try {
+            var validTitle = !validator.isEmpty(params.title);
+            var validContent = !validator.isEmpty(params.content);
+        }
+        
+        catch (error) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'Params are missing.'
+            });
+        }
+
+        if (validTitle && validContent) {
+
+            //NOTE: Param "new: true" indicates findOneAndUpdate method to return updated object.
+            Article.findOneAndUpdate({_id: id}, params, {new: true}, (error, articleUpdated) => {
+
+                if (error) {
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'Error updating article.'
+                    });
+                }
+
+                if (!articleUpdated) {
+                    return res.status(404).send({
+                        status: 'error',
+                        message: 'Article not found.'
+                    });
+                }
+
+                return res.status(200).send({
+                    status: 'success',
+                    articleUpdated
+                });
+
+            });
+
+        }
+
+        else {
+            return res.status(400).send({
+                status: 'error',
+                message: 'Params are not valid.'
+            });
+        }
+
     }
 
 };

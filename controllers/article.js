@@ -97,6 +97,43 @@ var controller = {
 
         });
 
+    },
+
+    //----------------------------------------------------------------------------------------------------
+    getArticle: (req, res) => {
+
+        var id = req.params.id;
+
+        if (!id) {
+            return res.status(400).send({
+                status: 'success',
+                message: 'Params are missing.'
+            }); 
+        }
+
+        Article.findById(id, (error, article) => {
+
+            if (error) {
+                return res.status(500).send({
+                    status: 'error',
+                    message: 'Error getting article.'
+                });
+            }
+
+            if (!article) {
+                return res.status(404).send({
+                    status: 'error',
+                    message: 'Article not found.'
+                });
+            }
+
+            return res.status(200).send({
+                status: 'success',
+                article
+            });
+
+        });
+
     }
 
 };

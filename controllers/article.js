@@ -311,6 +311,53 @@ var controller = {
 
         });
 
+    },
+
+    //----------------------------------------------------------------------------------------------------
+    search: (req, res) => {
+
+        var searchStr = req.params.search;
+
+        Article.find({
+            '$or': [
+                {
+                    'title': {
+                        '$regex': searchStr,
+                        '$options': 'i'
+                    }
+                },
+                {
+                    'content': {
+                        '$regex': searchStr,
+                        '$options': 'i'
+                    }
+                }
+            ]
+        })
+        .sort([['date', 'descending']])
+        .exec((error, articles) => {
+
+            if (error) {
+                return res.status(500).send({
+                    status: 'error',
+                    message: 'Error getting articles.'
+                });
+            }
+
+            if (!articles || !articles.length) {
+                return res.status(404).send({
+                    status: 'error',
+                    message: 'Articles collection is empty.'
+                });
+            }
+
+            return res.status(200).send({
+                status: 'success',
+                articles
+            });
+
+        });
+
     }
 
 };

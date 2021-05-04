@@ -60,6 +60,43 @@ var controller = {
             });
         }
         
+    },
+
+    //----------------------------------------------------------------------------------------------------
+    getArticles: (req, res) => {
+
+        var query = Article.find({});
+
+        //Optional.
+        var limit = req.params.limit;
+
+        if (limit || limit != undefined) {
+            query.limit(parseInt(limit));
+        }
+
+        query.sort('-_id').exec((error, articles) => {
+
+            if (error) {
+                return res.status(500).send({
+                    status: 'error',
+                    message: 'Error getting articles.'
+                }); 
+            }
+
+            if (!articles) {
+                return res.status(204).send({
+                    status: 'error',
+                    message: 'Articles collection is empty.'
+                }); 
+            }
+
+            return res.status(200).send({
+                status: 'success',
+                articles
+            }); 
+
+        });
+
     }
 
 };

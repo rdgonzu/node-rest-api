@@ -1,2 +1,2 @@
 # node-rest-api
-This is a simple Node REST Api, connected to MongoDB via Mongoose. This Api is built to be used on frontend frameworks exmples.
+This is a simple Node REST Api, connected to MongoDB via Mongoose. This Api is built to be used on frontend frameworks examples, following [this Udemy Course](https://www.udemy.com/course/master-en-frameworks-javascript-aprende-angular-react-vue-js/).

@@ -33,7 +33,7 @@ var controller = {
             //Set values.
             article.title = params.title;
             article.content = params.content;
-            article.image = null;
+            article.image = params.image ? params.image : null;
 
             //Saves new article.
             article.save((error, articleStored) => {
@@ -263,28 +263,39 @@ var controller = {
 
             var id = req.params.id;
 
-            Article.findOneAndUpdate({_id: id}, {image: fileName}, {new: true}, (error, articleUpdated) => {
+            if (id) {
 
-                if (error) {
-                    return res.status(500).send({
-                        status: 'error',
-                        status: 'Image loaded.'
+                Article.findOneAndUpdate({_id: id}, {image: fileName}, {new: true}, (error, articleUpdated) => {
+
+                    if (error) {
+                        return res.status(500).send({
+                            status: 'error',
+                            status: 'Image loaded.'
+                        });
+                    }
+
+                    if (!articleUpdated) {
+                        return res.status(404).send({
+                            status: 'error',
+                            status: 'Article not found.'
+                        });
+                    }
+
+                    return res.status(200).send({
+                        status: 'success',
+                        articleUpdated
                     });
-                }
 
-                if (!articleUpdated) {
-                    return res.status(404).send({
-                        status: 'error',
-                        status: 'Article not found.'
-                    });
-                }
-
-                return res.status(200).send({
-                    status: 'success',
-                    articleUpdated
                 });
 
-            });
+            }
+
+            else {
+                return res.status(200).send({
+                    status: 'success',
+                    fileName
+                });
+            }
 
         }
 
